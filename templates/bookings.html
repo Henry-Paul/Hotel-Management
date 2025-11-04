@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-check"></i> Bookings</h2>
+    <a href="{{ url_for('export_bookings') }}" class="btn btn-success"><i class="fas fa-download"></i> Export CSV</a>
+</div>
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addBookingModal">Add Booking</button>
+
+<!-- Add Booking Modal -->
+<div class="modal fade" id="addBookingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="modal-body">
+                    <div class="mb-3">{{ form.guest_name(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.guest_email(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.room_id(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.check_in(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.check_out(class="form-control") }}</div>
+                </div>
+                <div class="modal-footer">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr><th>Guest</th><th>Email</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Total</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.guest_name }}</td>
+                        <td>{{ booking.guest_email }}</td>
+                        <td>{{ booking.room.number }}</td>
+                        <td>{{ booking.check_in }}</td>
+                        <td>{{ booking.check_out }}</td>
+                        <td>${{ booking.total_amount }}</td>
+                        <td><span class="badge bg-{{ 'info' if booking.status == 'Booked' else 'success' if booking.status == 'Checked In' else 'secondary' }}">{{ booking.status }}</span></td>
+                        <td>
+                            {% if booking.status == 'Booked' %}<a href="{{ url_for('check_in', booking_id=booking.id) }}" class="btn btn-sm btn-success">Check In</a>{% endif %}
+                            {% if booking.status in ['Booked', 'Checked In'] %}<a href="{{ url_for('check_out', booking_id=booking.id) }}" class="btn btn-sm btn-warning">Check Out</a>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if search %}<p class="text-muted">Showing results for: "{{ search }}"</p>{% endif %}
+    </div>
+</div>
+{% endblock %}

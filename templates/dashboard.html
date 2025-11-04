@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5><i class="fas fa-chart-pie"></i> Occupancy</h5>
+                <h2>{{ "%.1f"|format(occupancy) }}%</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <canvas id="bookingsChart" height="100"></canvas>
+    </div>
+</div>
+<script>
+    const ctx = document.getElementById('bookingsChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ bookings_data|tojson|safe }}.map(d => d.strftime('%Y-%m-%d')),
+            datasets: [{ label: 'Upcoming Bookings', data: [1,2,3,4,5], borderColor: 'rgba(75,192,192,1)', tension: 0.1 }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+</script>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h5><i class="fas fa-search"></i> Quick Search</h5></div>
+            <div class="card-body">
+                <form action="{{ url_for('bookings') }}" method="GET">
+                    <input type="text" name="search" class="form-control" placeholder="Search bookings...">
+                    <button class="btn btn-outline-primary mt-2">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

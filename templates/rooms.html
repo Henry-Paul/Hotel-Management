@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-bed"></i> Rooms</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">Add Room</button>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addRoomModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="modal-body">
+                    <div class="mb-3">{{ form.number(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.room_type(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.price(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.status(class="form-control") }}</div>
+                </div>
+                <div class="modal-footer">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for room in rooms %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename='uploads/' + room.image_file) }}" class="card-img-top" alt="Room {{ room.number }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ room.number }} - {{ room.room_type }}</h5>
+                <p class="card-text">${{ room.price_per_night }}/night</p>
+                <span class="badge bg-{{ 'success' if room.status == 'Available' else 'danger' if room.status == 'Occupied' else 'warning' }}">{{ room.status }}</span>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editRoom({{ room.id }})">Edit</button>
+                    <a href="{{ url_for('delete_room', room_id=room.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete?')">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script>
+    function editRoom(id) {
+        // Modal for edit similar to add
+        alert('Edit modal would open here - implement as needed!');
+    }
+</script>
+{% endblock %}
